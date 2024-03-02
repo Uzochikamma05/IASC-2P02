@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Essay</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Three.js importmap -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js",
+                "OrbitControls": "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/controls/OrbitControls.js",
+                "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.19.1/dist/lil-gui.esm.js"
+            }
+        }
+    </script>
+    <!-- Three.js scene -->
+    <script src="script.js" type="module"></script>
+</head>
+<body>
+    <h1>Interactive Essay</h1>
+    <h2>Understanding Perception: Cave Allegory Reimagined</h2>
+
+    <!-- Part one -->
+    <section id="part-one">
+        <h2>Part 1: Flatness</h2>
+
+        <p>Imagine yourself nestled within the confines of a dimly lit cave, where the flickering flames of a fire cast elongated shadows upon the rugged walls. Here, amidst obscurity, the inhabitants perceive their reality through the dance of these shadows, weaving tales and deciphering their world through their transient forms.</p>
+
+        <p>As you gaze upon the cave wall, the shifting shadows paint a vivid tableau of life. Each flicker and twist seems to narrate a story, an intricate tapestry of existence etched upon the stone. It's a world where imagination reigns supreme, where the mind conjures meaning from the mere play of light and darkness.</p>
+
+        <p>In this realm, the concept of "Flatness," as expounded by Nick Sousanis, takes on profound significance. Flatness here doesn't merely refer to the physical dimension but encompasses a deeper understanding of perception. It's the realization that our understanding of reality is limited by our interpretation of shadows—our worldview is confined to the two-dimensional plane of the cave wall.</p>
+
+        <p>The worldview of the cave dwellers is inherently "Flat." Their understanding of reality is shaped by the shadows cast upon the wall, each movement and contour influencing their perceptions. It's a world where depth and complexity are distilled into simple silhouettes, where the nuances of existence are reduced to mere outlines.</p>
+
+        <p>Through their interpretation of the shadows, the inhabitants construct a version of reality that reflects their understanding of the world. It's a world where the familiar becomes fantastical, where the mundane takes on mystical dimensions. It's a testament to the power of perception and the inherent subjectivity of human experience.</p>
+
+        <p>In the depths of the cave, reality is a canvas upon which the imagination paints its most vivid dreams. It's a world where truth is elusive, where meaning is as fleeting as the shadows upon the wall. Yet, amid this uncertainty, there is a beauty—a beauty born from the depths of human creativity and the boundless expanse of the mind.</p>
+
+        <p>Continue to explore these mysteries by <span class="clickable" id="continue-reading-one">clicking here</span>.</p>
+    </section>
+
+    <!-- Part two -->
+    <section id="part-two" class="hidden">
+        <h2>Part 2: Seeing Double</h2>
+
+        <p>Stepping beyond the confines of the cave, you're greeted by a world of boundless expanse and infinite possibility. Here, the horizon stretches endlessly, the vibrant hues of nature unfolding in three-dimensional splendour. It's a world teeming with life, where every corner holds a new adventure waiting to be explored.</p>
+
+        <p>Unlike the flat representations on the cave wall, the outside world offers a richness of depth and texture. Here, the sun hangs high in the sky, casting its warm glow over the landscape, illuminating the intricacies of existence in all their glory. It's a world where reality transcends the confines of shadow and silhouette, where every facet of existence is imbued with meaning and significance.</p>
+
+        <p>In this realm, the concept of "Seeing Double" takes on new significance. It's the understanding that true insight comes from embracing multiple perspectives, from seeing beyond the surface to uncover the hidden truths beneath. It's the realization that the interplay between light and shadow holds the key to unlocking the mysteries of existence.</p>
+
+        <p>As you compare and contrast the 2D view of the cave wall with the 3D view outside, a profound truth begins to emerge. It's the understanding that reality is multi-dimensional, that truth is not confined to a single perspective but is shaped by the convergence of myriad viewpoints. It's the recognition that only by embracing the complexity of existence can we hope to grasp the fullness of truth.</p>
+
+        <p>In this convergence of 2D and 3D views lies the essence of "Seeing Double." It's the recognition that truth is not static but dynamic, that understanding is not fixed but fluid. It's the understanding that only by transcending the limitations of perception can we hope to glimpse the vastness of reality beyond the cave's confines.</p>
+
+        <p>By combining the insights gained from both perspectives, we begin to unravel the mysteries of existence, to uncover the hidden truths that lie beneath the surface. It's a journey of discovery, a quest for understanding that leads us ever closer to the heart of truth itself. And as we journey onward, we realize that the truest wisdom lies not in the destination but in the journey itself.</p>
+
+        <p>Discover more by <span class="clickable" id="continue-reading-two">clicking here</span>.</p>
+    </section>
+
+    <canvas class="webgl"></canvas>
+
+    <script>
+        // DOM Interactions
+        const domObject = {
+            part: 1,
+            firstChange: false,
+            secondChange: false,
+            thirdChange: false,
+            fourthChange: false
+        };
+
+        document.querySelector('#continue-reading-one').onclick = function() {
+            document.querySelector('#part-two').classList.remove('hidden');
+            document.querySelector('#part-one').classList.add('hidden');
+            domObject.part = 2;
+        };
+
+        document.querySelector('#continue-reading-two').onclick = function() {
+            document.querySelector('#part-one').classList.remove('hidden');
+            document.querySelector('#part-two').classList.add('hidden');
+            domObject.part = 1;
+        };
+
+        document.querySelector('#restart').onclick = function() {
+            document.querySelector('#part-two').classList.add('hidden');
+            document.querySelector('#part-one').classList.remove('hidden');
+            domObject.part = 1;
+
+            domObject.firstChange = false;
+            domObject.secondChange = false;
+            domObject.thirdChange = false;
+            domObject.fourthChange = false;
+        };
+
+        document.querySelector('#first-change').onclick = function() {
+            domObject.firstChange = true;
+        };
+
+        document
