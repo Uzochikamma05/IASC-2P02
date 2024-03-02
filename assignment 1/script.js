@@ -1,6 +1,5 @@
-import * as THREE from "three"
-import * as dat from "lil-gui"
-import { OrbitControls } from "OrbitControls"
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 /**********
 ** SETUP **
@@ -33,8 +32,8 @@ scene.add(camera)
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
-  canvas: canvas,
-  antialias: true
+    canvas: canvas,
+    antialias: true
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.shadowMap.enabled = true
@@ -75,93 +74,40 @@ caveFloor.position.set(0, -2.5, 0)
 scene.add(caveFloor)
 
 // OBJECTS
-// torusKnot
-const torusKnotGeometry = new THREE.TorusKnotGeometry(1, 0.2)
-const torusKnotMaterial = new THREE.MeshNormalMaterial()
-const torusKnot = new THREE.Mesh(torusKnotGeometry, torusKnotMaterial)
-torusKnot.position.set(6, 1.5, 0)
-torusKnot.castShadow = true
-scene.add(torusKnot)
+// Replace the current torusKnot mesh with a SphereGeometry
+const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+const sphereMaterial = new THREE.MeshNormalMaterial();
+const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+sphereMesh.position.set(6, 1.5, 0); // Position similar to previous torusKnot
+sphereMesh.castShadow = true;
+scene.add(sphereMesh);
 
-// SUN
-const sunGeometry = new THREE.SphereGeometry()
-const sunMaterial = new THREE.MeshLambertMaterial({
-    emissive: new THREE.Color('orange'),
-    emissiveIntensity: 20
-})
-const sun = new THREE.Mesh(sunGeometry, sunMaterial)
-scene.add(sun)
+// Add another mesh (ConeGeometry)
+const coneGeometry = new THREE.ConeGeometry(0.5, 1, 32);
+const coneMaterial = new THREE.MeshNormalMaterial();
+const coneMesh = new THREE.Mesh(coneGeometry, coneMaterial);
+coneMesh.position.set(4, 1.5, 0); // Position to cast shadow on cave wall
+coneMesh.castShadow = true;
+scene.add(coneMesh);
 
 /***********
 ** LIGHTS **
 ************/
-/*
-// Ambient Light
-const ambientLight = new THREE.AmbientLight(
-    new THREE.Color('white')
-)
-scene.add(ambientLight)
-*/
-
 // Directional Light
 const directionalLight = new THREE.DirectionalLight(
     new THREE.Color('white'),
     0.5
 )
-directionalLight.target = caveWall
 directionalLight.position.set(10, 2.5, 0)
 directionalLight.castShadow = true
 directionalLight.shadow.mapSize.width = 1024
 directionalLight.shadow.mapSize.height = 1024
 scene.add(directionalLight)
 
-// Directional Light Helper
-//const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight)
-//scene.add(directionalLightHelper)
-
-/*******
-** UI **
-********/
-/*
-const ui = new dat.GUI()
-
-const uiObject = {}
-
-uiObject.reset = () =>
-{
-    directionalLight.position.set(8.6, 1.7, 0)
-}
-
-// Directional Light
-const lightPositionFolder = ui.addFolder('Directional Light Position')
-
-lightPositionFolder
-    .add(directionalLight.position, 'x')
-    .min(-10)
-    .max(20)
-    .step(0.1)
-
-lightPositionFolder
-    .add(directionalLight.position, 'y')
-    .min(-10)
-    .max(10)
-    .step(0.1)
-
-lightPositionFolder
-    .add(directionalLight.position, 'z')
-    .min(-10)
-    .max(10)
-    .step(0.1)
-
-lightPositionFolder
-    .add(uiObject, 'reset')
-    .name('Reset position')
-*/
-
 /*********************
 ** DOM INTERACTIONS **
 **********************/
-// domObject
+// DOM Object
 const domObject = {
     part: 1,
     firstChange: false,
@@ -170,45 +116,19 @@ const domObject = {
     fourthChange: false
 }
 
-// continue-reading
-document.querySelector('#continue-reading').onclick = function() {
-    document.querySelector('#part-two').classList.remove('hidden')
-    document.querySelector('#part-one').classList.add('hidden')
-    domObject.part = 2
-}
-
-// restart
-document.querySelector('#restart').onclick = function() {
-    document.querySelector('#part-two').classList.add('hidden')
-    document.querySelector('#part-one').classList.remove('hidden')
-    domObject.part = 1
-
-    // reset domObject changes
-    domObject.firstChange = false
-    domObject.secondChange = false
-    domObject.thirdChange = false
-    domObject.fourthChange = false
-
-    // reset directionalLight
-    directionalLight.position.set(10, 2.5, 0)
-}
-
-// first change
+// Animation triggers
 document.querySelector('#first-change').onclick = function() {
     domObject.firstChange = true
 }
 
-// second change
 document.querySelector('#second-change').onclick = function() {
     domObject.secondChange = true
 }
 
-// third change
 document.querySelector('#third-change').onclick = function() {
     domObject.thirdChange = true
 }
 
-// fourth change
 document.querySelector('#fourth-change').onclick = function() {
     domObject.fourthChange = true
 }
@@ -219,58 +139,28 @@ document.querySelector('#fourth-change').onclick = function() {
 const clock = new THREE.Clock()
 
 // Animate
-const animation = () =>
-{
-    // Return elapsedTime
+const animation = () => {
     const elapsedTime = clock.getElapsedTime()
 
-    // Animate Objects
-    //torusKnot.rotation.y = elapsedTime
-    //torusKnot.position.z = Math.sin(elapsedTime * 0.5) * 2
-
-    // Update directionalLightHelper
-    //directionalLightHelper.update()
-
-    // Update sun position to match directionalLight position
-    sun.position.copy(directionalLight.position)
-
-    // Controls
-    controls.update()
-
-    // DOM INTERACTIONS
-    // part 1
-    if(domObject.part === 1){
-        camera.position.set(1.1, 0.3, 1.3)
-        camera.lookAt(-5, 0, 1.5)
+    // Apply animations based on DOM interactions
+    if (domObject.firstChange) {
+        sphereMesh.rotation.y = elapsedTime
+        sphereMesh.rotation.z = elapsedTime
     }
 
-    // part 2
-    if(domObject.part === 2){
-        camera.position.set(9.9, 3.5, 10.5)
-        camera.lookAt(0, 0, 0)
+    if (domObject.secondChange) {
+        sphereMesh.position.y = Math.sin(elapsedTime * 0.5) * 6
     }
 
-    // first-change
-    if(domObject.firstChange){
-       torusKnot.rotation.y = elapsedTime
-       torusKnot.rotation.z = elapsedTime
-    }
-    // second-change
-    if(domObject.secondChange){
-        torusKnot.position.y = Math.sin(elapsedTime * 0.5) * 6
+    if (domObject.thirdChange) {
+        sphereMesh.position.y = 2
     }
 
-    // third-change
-    if(domObject.thirdChange){
-        torusKnot.position.y = 2
-    }
-
-    // fourth-change
-    if(domObject.fourthChange){
+    if (domObject.fourthChange) {
         directionalLight.position.y -= 0.05
     }
 
-    // Renderer
+    // Render scene
     renderer.render(scene, camera)
 
     // Request next frame
