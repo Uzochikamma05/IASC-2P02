@@ -1,5 +1,6 @@
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import * as THREE from "three"
+import * as dat from "lil-gui"
+import { OrbitControls } from "OrbitControls"
 
 /**********
 ** SETUP **
@@ -32,8 +33,8 @@ scene.add(camera)
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    antialias: true
+  canvas: canvas,
+  antialias: true
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.shadowMap.enabled = true
@@ -74,40 +75,102 @@ caveFloor.position.set(0, -2.5, 0)
 scene.add(caveFloor)
 
 // OBJECTS
-// Replace the current torusKnot mesh with a SphereGeometry
-const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-const sphereMaterial = new THREE.MeshNormalMaterial();
-const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-sphereMesh.position.set(6, 1.5, 0); // Position similar to previous torusKnot
-sphereMesh.castShadow = true;
-scene.add(sphereMesh);
+// Replace the current torusKnot with a TorusGeometry
+const torusGeometry = new THREE.TorusGeometry(0.8, 0.2, 16, 100); // Increase radius from 0.5 to 0.8
+const torusMaterial = new THREE.MeshNormalMaterial();
+const torusMesh = new THREE.Mesh(torusGeometry, torusMaterial);
+torusMesh.position.set(6, 1.5, 2); // Position similar to previous torusKnot
+torusMesh.rotation.set(Math.PI / 2, Math.PI / 2, 0); // Rotate the torus to face the cave wall upward
+torusMesh.castShadow = true;
+scene.add(torusMesh);
 
 // Add another mesh (ConeGeometry)
-const coneGeometry = new THREE.ConeGeometry(0.5, 1, 32);
+const coneGeometry = new THREE.ConeGeometry(0.7, 1.5, 32); // Increase radius to 0.7 and height to 1.5
 const coneMaterial = new THREE.MeshNormalMaterial();
 const coneMesh = new THREE.Mesh(coneGeometry, coneMaterial);
-coneMesh.position.set(4, 1.5, 0); // Position to cast shadow on cave wall
+coneMesh.position.set(4, 1, -1.5); // Position to cast shadow on cave wall
 coneMesh.castShadow = true;
 scene.add(coneMesh);
+
+// SUN
+const sunGeometry = new THREE.SphereGeometry()
+const sunMaterial = new THREE.MeshLambertMaterial({
+    emissive: new THREE.Color('orange'),
+    emissiveIntensity: 20
+})
+const sun = new THREE.Mesh(sunGeometry, sunMaterial)
+scene.add(sun)
 
 /***********
 ** LIGHTS **
 ************/
+/*
+// Ambient Light
+const ambientLight = new THREE.AmbientLight(
+    new THREE.Color('white')
+)
+scene.add(ambientLight)
+*/
+
 // Directional Light
 const directionalLight = new THREE.DirectionalLight(
     new THREE.Color('white'),
     0.5
 )
+directionalLight.target = caveWall
 directionalLight.position.set(10, 2.5, 0)
 directionalLight.castShadow = true
 directionalLight.shadow.mapSize.width = 1024
 directionalLight.shadow.mapSize.height = 1024
 scene.add(directionalLight)
 
+// Directional Light Helper
+//const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight)
+//scene.add(directionalLightHelper)
+
+/*******
+** UI **
+********/
+/*
+const ui = new dat.GUI()
+
+const uiObject = {}
+
+uiObject.reset = () =>
+{
+    directionalLight.position.set(8.6, 1.7, 0)
+}
+
+// Directional Light
+const lightPositionFolder = ui.addFolder('Directional Light Position')
+
+lightPositionFolder
+    .add(directionalLight.position, 'x')
+    .min(-10)
+    .max(20)
+    .step(0.1)
+
+lightPositionFolder
+    .add(directionalLight.position, 'y')
+    .min(-10)
+    .max(10)
+    .step(0.1)
+
+lightPositionFolder
+    .add(directionalLight.position, 'z')
+    .min(-10)
+    .max(10)
+    .step(0.1)
+
+lightPositionFolder
+    .add(uiObject, 'reset')
+    .name('Reset position')
+*/
+
 /*********************
 ** DOM INTERACTIONS **
 **********************/
-// DOM Object
+// domObject
 const domObject = {
     part: 1,
     firstChange: false,
@@ -116,19 +179,45 @@ const domObject = {
     fourthChange: false
 }
 
-// Animation triggers
+// continue-reading
+document.querySelector('#continue-reading').onclick = function() {
+    document.querySelector('#part-two').classList.remove('hidden')
+    document.querySelector('#part-one').classList.add('hidden')
+    domObject.part = 2
+}
+
+// restart
+document.querySelector('#restart').onclick = function() {
+    document.querySelector('#part-two').classList.add('hidden')
+    document.querySelector('#part-one').classList.remove('hidden')
+    domObject.part = 1
+
+    // reset domObject changes
+    domObject.firstChange = false
+    domObject.secondChange = false
+    domObject.thirdChange = false
+    domObject.fourthChange = false
+
+    // reset directionalLight
+    directionalLight.position.set(10, 2.5, 0)
+}
+
+// first change
 document.querySelector('#first-change').onclick = function() {
     domObject.firstChange = true
 }
 
+// second change
 document.querySelector('#second-change').onclick = function() {
     domObject.secondChange = true
 }
 
+// third change
 document.querySelector('#third-change').onclick = function() {
     domObject.thirdChange = true
 }
 
+// fourth change
 document.querySelector('#fourth-change').onclick = function() {
     domObject.fourthChange = true
 }
@@ -136,35 +225,121 @@ document.querySelector('#fourth-change').onclick = function() {
 /*******************
 ** ANIMATION LOOP **
 ********************/
-const clock = new THREE.Clock()
+const clock = new THREE.Clock();
+let coneVisible = true;
+let coneTimeout;
 
 // Animate
 const animation = () => {
-    const elapsedTime = clock.getElapsedTime()
+    // Return elapsedTime
+    const elapsedTime = clock.getElapsedTime();
 
-    // Apply animations based on DOM interactions
+    // Animate Objects
+    // torusMesh.rotation.y = elapsedTime
+    // torusKnot.position.z = Math.sin(elapsedTime * 0.5) * 2
+
+    // Update directionalLightHelper
+    // directionalLightHelper.update()
+
+    // Update sun position to match directionalLight position
+    sun.position.copy(directionalLight.position);
+
+    // Controls
+    controls.update();
+
+    // DOM INTERACTIONS
+    // part 1
+    if (domObject.part === 1) {
+        camera.position.set(1.1, 0.3, 1.3);
+        camera.lookAt(-5, 0, 1.5);
+    }
+
+    // part 2
+    if (domObject.part === 2) {
+        camera.position.set(9.9, 3.5, 10.5);
+        camera.lookAt(0, 0, 0);
+    }
+
+    // first-change
     if (domObject.firstChange) {
-        sphereMesh.rotation.y = elapsedTime
-        sphereMesh.rotation.z = elapsedTime
+        // Animate torusMesh rotation
+        torusMesh.rotation.y = elapsedTime;
+        torusMesh.rotation.z = elapsedTime;
     }
 
+    // second-change
     if (domObject.secondChange) {
-        sphereMesh.position.y = Math.sin(elapsedTime * 0.5) * 6
+        // Animate coneMesh (previously cube) to move towards torusMesh (previously sphere)
+        coneMesh.position.z = Math.sin(elapsedTime * 0.5) * 2;
+
+        // Check if the cone has reached the front of the torus
+        if (coneMesh.position.z >= 0 && coneVisible) {
+            // Hide cone after 1 second
+            coneTimeout = setTimeout(() => {
+                coneMesh.visible = false;
+                coneVisible = false;
+            }, 2000);
+        }
+
+        // Check if the cone has moved back behind the torus
+        if (coneMesh.position.z < 0 && !coneVisible) {
+            // Show cone after 0.5 second (faster reappearance)
+            clearTimeout(coneTimeout); // Clear any previous timeout
+            coneTimeout = setTimeout(() => {
+                coneMesh.visible = true;
+                coneVisible = true;
+            }, 10); // Reduced timeout duration to 100 milliseconds
+        }
     }
 
+    // third-change
     if (domObject.thirdChange) {
-        sphereMesh.position.y = 2
+        // Stop torusMesh rotation
+    torusMesh.rotation.set(0, 0, 0); // Set rotation to zero
+        // Reset cone position to its original position
+        coneMesh.position.set(4, 1, -1.5); // Original position of the cone
     }
 
+    // fourth-change
     if (domObject.fourthChange) {
-        directionalLight.position.y -= 0.05
+        const targetPosition = new THREE.Vector3(0, 10, 0); // Target position
+        const animationDuration = 5; // Duration in seconds
+        const totalFrames = 60 * animationDuration; // Total frames
+        const initialPosition = directionalLight.position.clone(); // Initial position
+    
+        let currentFrame = 0;
+    
+        // Animation function
+        const animateLight = () => {
+            // Calculate the interpolation factor based on current frame
+            const t = currentFrame / totalFrames;
+    
+            // Interpolate between initial and target positions
+            directionalLight.position.lerpVectors(initialPosition, targetPosition, t);
+    
+            // Increment current frame
+            currentFrame++;
+    
+            // Check if animation is complete
+            if (currentFrame < totalFrames) {
+                // Continue animation
+                requestAnimationFrame(animateLight);
+            } else {
+                // Animation is complete, reset animation parameters
+                currentFrame = 0;
+                domObject.fourthChange = false; // Reset fourthChange flag
+                resetLight(); // Move light back to its original position
+            }
+        };
+    
+        animateLight();
     }
 
-    // Render scene
-    renderer.render(scene, camera)
+    // Renderer
+    renderer.render(scene, camera);
 
     // Request next frame
-    window.requestAnimationFrame(animation)
-}
+    window.requestAnimationFrame(animation);
+};
 
-animation()
+animation();
