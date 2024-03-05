@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<head>
+    <title>3D Portfolio</title>
+
+    <!-- css -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- three.js importmap -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://ga.jspm.io/npm:three@0.158.0/build/three.module.js",
+                "OrbitControls": "https://ga.jspm.io/npm:three@0.158.0/examples/jsm/controls/OrbitControls.js",
+                "lil-gui": "https://ga.jspm.io/npm:lil-gui@0.19.1/dist/lil-gui.esm.js",
+                "GLTFLoader": "https://ga.jspm.io/npm:three@0.158.0/examples/jsm/loaders/GLTFLoader.js"
+            }
+        }
+    </script>
+
+    <!-- three.js -->
+    <script src="script.js" type="module"></script>
+</head>
+<body>
+    <!-- canvas -->
+    <canvas class="webgl"></canvas>
+
+    <!-- splash -->
+    <section class="splash">
+        <h1>Uzochikamma Ifemenam</h1>
+
+
+    </section>
+
+    <!-- content -->
+    <section class="content" id="first">
+       
+        <h1>About me</h1>
+        <p>I am a second year IASC student. I aspire to go into UI design because I enjoy using Figma to redesign websites. </p>
+        <p><span class="clickable" id="click1">View projects</span></p>
+    </section>
+
+    <section class="content hidden" id="second">
+       
+        <h1>Interactive Essay</h1>
+        <p>The concept of time is malleable. It is important to always see things from a different perspective as the world is three dimensional.</p>
+        <p><span class="clickable" id="click2">Next project</span></p>
+    </section>
+
+    <section class="content hidden" id="third">
+        <h1>Data Visualization</h1>
+        <p>The data visalization will be based on "The Great Switcheroo by Road Dahl.</p>
+        <p><span class="clickable" id="click3">Back to Home</span></p>
+    </section>
+
+    <section class="footer">
+        <p>Datsun 280Z by Martin Trafas. <a href="https://sketchfab.com/3d-models/free-datsun-280z-0789ab2ece9442de94b3c41595e0ecbd" target="_blank">View on Sketchfab</a>.</p>
+    </section>
+</body>
