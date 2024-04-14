@@ -1,0 +1,94 @@
+/* Body */
+body {
+    margin: 0 auto;
+    width: 80%;
+    font-family: 'Times New Roman', Times, serif, Helvetica, sans-serif;
+}
+
+p {
+    font-size: 16px;
+}
+
+/* Headers */
+h1, h2 {
+    text-align: center;
+}
+
+h1 {
+    font-size: 48px;
+}
+
+h2 {
+    font-size: 36px;
+}
+
+/* Canvas */
+.canvas-container {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.canvas-container p {
+    font-size: 12px;
+}
+
+canvas {
+    border-radius: 10px 10px 0px 0px;
+}
+
+/* Legend */
+ul > li {
+    display: inline-block;
+    font-size: 24px;
+    margin-top: 0px;
+    margin-right: 5%;
+}
+
+#red {
+    color: #c30101;
+}
+
+#yellow {
+    color: #feb204;
+}
+
+#blue {
+    color: #1F669B;
+}
+
+/* UI */
+.lil-gui.root {
+    border-radius: 10px;
+    margin-left: 25%;
+    width: 50%;
+}
+
+.lil-gui .name {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 5px 5px 5px;
+}
+
+#lil-gui-name-1  {
+    color: #c30101;
+}
+
+#lil-gui-name-2  {
+    color: #feb204;
+}
+
+#lil-gui-name-3  {
+    color: #1F669B;
+}
+
+#lil-gui-name-5 {
+    color: #5B568D;
+}
+
+#lil-gui-name-6 {
+    color: #A11F10;
+}
+
+#lil-gui-name-7 {
+    color: #000435;
+}
